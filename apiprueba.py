@@ -27,22 +27,12 @@ def api_all():
     return jsonify(personajes)
 
 
-@app.route('/personaje', methods=['GET'])
-def api_id():
+@app.route('/personaje/<string:nombre>', methods=['GET'])
+def api_nombre(nombre):
  
-    if "nombre" in request.args:
-        nombre = str(request.args['nombre'])
-    else:
-        return "Error: No se proporcionó ningún campo de identificación. Especifique una identificación."
-
-    results = []
-
-    for personaje in personajes:
-        if personaje['nombre'] == nombre:
-            results.append(personaje)
-
-        else : print(results)
-    return jsonify(results)
+    
+    personajesF = [personaje for personaje in personajes if personaje['nombre'] == nombre]
+    return jsonify(personajesF[0])
 
     
 app.run(host='localhost',debug=False, port=3010)
