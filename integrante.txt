@@ -1,0 +1,3 @@
+{'edad predecida': 23, 'error': '8%', 'nombre': 'Bryan', 'edad': '25'}
+{'edad predecida': 44, 'error': '100%', 'nombre': 'Abraham', 'edad': '22'}
+{'edad predecida': 50, 'error': '108%', 'nombre': 'Gerson', 'edad': '24'}
