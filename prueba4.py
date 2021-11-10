@@ -1,7 +1,7 @@
 import json
 import requests
 
-r = requests.get("https://rickandmortyapi.com/api/character/?page=2", params = {"id":28})
+r = requests.get("https://rickandmortyapi.com/api/character/?page=2")
 if r.status_code == 200:
     data = json.loads (r.text)
     # print(data["info"]["count"])
@@ -9,8 +9,6 @@ if r.status_code == 200:
     
     personajes=[]
     for item in data["results"]:
-        # print(item["name"])
-    # print(data["results"][0]["name"])
         objtemp = {
         "nombre": item["name"],
         "genero": item["gender"],
@@ -19,7 +17,7 @@ if r.status_code == 200:
         # print(objtemp)
         personajes.append(objtemp)
         
-    # print(personajes)
+    print(personajes)
     
     
     integrantes = [
@@ -47,6 +45,7 @@ if r.status_code == 200:
             dato = json.loads (r.text)
            
         # print(dato)
+        # print(r.text)
         errorp = (((dato["age"])-int((item["edad"])))/int((item["edad"])))*100
         errorporc = int(abs(errorp))
         errortext = str(errorporc) + "%"
@@ -62,7 +61,7 @@ if r.status_code == 200:
         
         nintegrantes.append(objtem)
         
-    print(nintegrantes)
+    # print(nintegrantes)
     
     with open('integrante.txt', 'w') as temp_file:
         for item in nintegrantes:
