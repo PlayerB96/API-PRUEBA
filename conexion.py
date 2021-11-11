@@ -1,6 +1,7 @@
 import json
 import logging
 import time
+import requests
 from logging.handlers import RotatingFileHandler
 
 
@@ -19,59 +20,98 @@ class Retransmision:
 
         token = "d92ffc2de10ae0c2b4608dc4c9086d8614529C61371DF6B38111B4549D90F303F85C30F4"
         registro = self.apiHomologacion(token)
-        # nregistro=[]
-        # with open('homologacion14.txt', 'w') as temp_file:
 
-        # LOG_FILENAME = '/homologacion2.log'
-        # logger360 = logging.getLogger('homologacion')
-        # logger360.setLevel(logging.DEBUG)
-        # handler = logging.handlers.RotatingFileHandler(
-        #   LOG_FILENAME, maxBytes=20, backupCount=5)
-        # logger360.addHandler(logging.FileHandler('./homologacion2.log'))
-        # handler.setLevel(logging.CRITICAL)
-        # logger360.addHandler(handler)
+        # for row in registro['items']:
 
-        # # nregistro = []
-        # log_formatter = logging.Formatter()
-
-        # logFile = './homologacion3.log'
-
-        # my_handler = RotatingFileHandler(logFile, mode='a', maxBytes=5*1024*1024, 
-        #                                 backupCount=2, encoding=None, delay=0)
-        # my_handler.setFormatter(log_formatter)
-        # my_handler.setLevel(logging.INFO)
-
-        # logger360 = logging.getLogger('root')
-        # logger360.setLevel(logging.INFO)
-
-        # logger360.addHandler(my_handler)
-        for row in registro['items']:
-
-            # nregistro.append(row['nm'])
-            # temp_file.write("%s\n" % row["nm"])  
-            logging.basicConfig(filename='./homologacion.log', format='%(message)s', level=logging.ERROR)
+        #     logging.basicConfig(filename='./homologacion.log', format='%(message)s', level=logging.ERROR)
            
-            logging.error(row['nm'])
-        logging.error('Se envio Trama Nombre     -    ')     
-            # logger360.error(row["nm"])
-                # print(row)    
-        # file = open('homologacion8.txt', 'r')
-                # registro.token(row)
-                # y = json.dumps(nregistro)
+        #     logging.error(row['nm'])
+        # logging.error('Se envio Trama Nombre     -    ')
+        # lista=[]   
+        for row in registro['items']:
+            if row['pos'] == None:
+                objTemp = {
+                        'latitud':'',
+                        'longitud':'',
+                        'velocidad': 0,
+                        'placa':'',
+                        'posicion':'apagado'
+                        
+                }
+            elif row['pos']['s'] > 0 :    
+                objTemp = {
+                        'latitud':str(row['pos']['x']),
+                        'longitud':str(row['pos']['y']),
+                        'velocidad': str(row['pos']['s']),
+                        'placa':str(row['nm']),
+                        'posicion':'en ruta'
+                        
+                }
             
-            # print(*nregistro, sep = ',')
-            # print(type(nregistro))
+            else :    
+                objTemp = {
+                        'latitud':str(row['pos']['x']),
+                        'longitud':str(row['pos']['y']),
+                        'velocidad': str(row['pos']['s']),
+                        'placa':str(row['nm']),
+                        'posicion':'detenido'
+                        
+                }
             
-        # with open('homologacion11.txt', 'w') as temp_file:
-        #     for item in nregistro:
-        #         var = item
-        #         temp_file.write("%s\n" % var )  
-        #         print(var)
-        # file = open('homologacion8.txt', 'r')
+            # lista.append(objTemp)
+            # print(objTemp)
+            if row['pos'] != None:
+                objToken = 'https://geocode-maps.wialon.com/hst-api.wialon.com/gis_geocode?coords=[{"lon":'+objTemp['latitud']+',"lat":'+objTemp['longitud']+'}]&flags=1255211008&uid=21734836'
+                result = requests.get(objToken)
+                # print(result)
+                json_result = json.loads(result.text)
+                
         
+            else :
+                json_result[0] = ' No hay Direccion......'
+            print(json_result[0])
+            # dir = json.dumps(json_result)
+            # print(json_result)
+            # print(str(dir))
+            vel = int(objTemp['velocidad'])
+            # print(objTemp['posicion'])
+            pos = objTemp['posicion']
+            if pos == 'en ruta' :
+                objFinal = {
+                            'placa':str(row['nm']),
+                            'posicion' : "en ruta",
+                            'velocidad' : vel,
+                            'direccion' : str(json_result)
+                }
+            elif pos == 'detenido'  :
+                 objFinal = {
+                            'placa':str(row['nm']),
+                            'posicion' : "detenido",
+                            'velocidad' : vel,
+                            'direccion' : str(json_result)
+                }
+            else :
+                 objFinal = {
+                            'placa':str(row['nm']),
+                            'posicion' : "apagado",
+                            'velocidad' : vel,
+                            'direccion' : str(json_result)
+                }
+            # dir = json.dumps(json_result)
+            # print(json_result)
+            # obj = json.dumps(objFinal['direccion'])
+            # nobj = str(obj)[3:-3]
+            # print(json_result)
 
-while True:
-    print(str(Retransmision().ejecution()))
-    time.sleep(3)
+            logging.basicConfig(filename='./homoDireccion.log', format='%(message)s', level=logging.ERROR)
+            # print(row['pos']) 
+            logging.error(objFinal['placa'] +', '+ objFinal['posicion'] +', '+ json_result[0])
+            # logging.error(' LATITUD          -     LONGITUD   ')  
+
+
+
+# while True:
+print(str(Retransmision().ejecution()))
+    # time.sleep(3)
     
     
